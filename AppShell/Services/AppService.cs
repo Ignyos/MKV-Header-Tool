@@ -23,17 +23,4 @@ public class AppService : IAppService
             { "autoSave", true }
         };
     }
-
-    public async Task<AppInfo> GetAppInfoAsync()
-    {
-        _logger.LogInformation("Getting app info");
-        
-        await Task.Delay(10); // Simulate async operation
-
-        return new AppInfo(
-            Version: "1.0.0",
-            Platform: DeviceInfo.Platform.ToString(),
-            StartTime: _startTime
-        );
-    }
 }

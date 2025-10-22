@@ -34,25 +34,6 @@ public class JsBridgeService
         _logger = logger;
     }
 
-    /// <summary>
-    /// Get application information for the frontend
-    /// </summary>
-    [JSInvokable]
-    public async Task<string> GetAppInfoAsync()
-    {
-        try
-        {
-            _logger.LogInformation("Bridge: Getting app info");
-            var appInfo = await _appService.GetAppInfoAsync();
-            return JsonSerializer.Serialize(appInfo);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting app info");
-            throw;
-        }
-    }
-
     // MKV-specific bridge methods
 
     /// <summary>

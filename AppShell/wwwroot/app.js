@@ -34,36 +34,6 @@ class AppBridge {
         this.bridgeService = dotNetBridgeService;
         this.isInitialized = true;
         console.log('Bridge connected to .NET backend');
-        
-        // Update UI to show bridge is ready
-        this.updateConnectionStatus(true);
-    }
-
-    /**
-     * Update connection status in the UI
-     * @param {boolean} connected - Whether bridge is connected
-     */
-    updateConnectionStatus(connected) {
-        // This could update a status indicator in the UI
-        console.log(`Bridge status: ${connected ? 'Connected' : 'Disconnected'}`);
-    }
-
-    /**
-     * Get application information
-     * @returns {Promise<object>} App info object
-     */
-    async getAppInfo() {
-        if (!this.isInitialized) {
-            throw new Error('Bridge not initialized');
-        }
-        
-        try {
-            const result = await this.bridgeService.invokeMethodAsync('GetAppInfoAsync');
-            return JSON.parse(result);
-        } catch (error) {
-            console.error('Get app info failed:', error);
-            throw error;
-        }
     }
 
     // MKV-specific bridge methods
@@ -249,9 +219,6 @@ window.initializeBridge = function(dotNetBridgeService) {
 function exposeBridgeMethods() {
     // Expose bridge methods globally for easy access
     window.bridgeService = {
-        // General bridge methods
-        getAppInfo: () => window.appBridge.getAppInfo(),
-        
         // MKV-specific bridge methods
         getAvailableMkvProperties: () => window.appBridge.getAvailableMkvProperties(),
         readMkvFile: (filePath) => window.appBridge.readMkvFile(filePath),
@@ -294,21 +261,6 @@ function showResult(data) {
     if (resultDisplay && resultContent) {
         resultContent.textContent = JSON.stringify(data, null, 2);
         resultDisplay.classList.remove('hidden');
-    }
-}
-
-async function getApplicationInfo() {
-    showLoading();
-    
-    try {
-        const result = await window.bridgeService.getAppInfo();
-        showResult(result);
-        console.log('App info retrieved:', result);
-    } catch (error) {
-        showResult({ error: error.message });
-        console.error('Get app info failed:', error);
-    } finally {
-        hideLoading();
     }
 }
 
