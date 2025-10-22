@@ -1,0 +1,40 @@
+@using Microsoft.JSInterop
+@using global::AppShell.Services
+@inject IJSRuntime JSRuntime
+@inject JsBridgeService BridgeService
+
+@* 
+    Minimal Blazor Host Component
+    This component only provides the JSInterop bridge to the pure JavaScript frontend.
+    The pure JavaScript UI is rendered directly in index.html, not through Blazor.
+*@
+
+@* Empty component - all UI is handled by pure JavaScript in index.html *@
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Initialize the JavaScript bridge for the pure frontend
+            await InitializeBridge();
+        }
+    }
+
+    private async Task InitializeBridge()
+    {
+        try
+        {
+            // Create a DotNet reference for the bridge service
+            var bridgeRef = DotNetObjectReference.Create(BridgeService);
+            
+            // Initialize the JavaScript bridge with the C# bridge service
+            await JSRuntime.InvokeVoidAsync("window.initializeBridge", bridgeRef);
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't update UI here since frontend handles all UI
+            Console.WriteLine($"Bridge initialization error: {ex.Message}");
+        }
+    }
+}

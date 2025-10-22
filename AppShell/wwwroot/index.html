@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MKV Header Tool</title>
+    <base href="/" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Hidden Blazor bridge component (provides JSInterop only) -->
+    <div id="blazor-bridge" class="hidden"></div>
+    
+    <!-- Pure JavaScript Frontend UI (static DOM, hydrated by app.js) -->
+    <div id="app">
+        <div class="split">
+            <!-- Left panel: selection and file list -->
+            <aside class="panel panel-left">
+                <div class="panel-header">
+                    <button id="btnSelectFiles" class="primary">Select File(s)</button>
+                    <button id="btnSelectFolder" class="primary">Select Folder</button>
+                </div>
+                <ul id="fileList" class="list"></ul>
+            </aside>
+
+            <!-- Right panel: details/properties (placeholder for next steps) -->
+            <main class="panel panel-right">
+                <div class="panel-body" id="details">
+                    <div class="panel-header" id="selected-file-path"></div>
+                    <div class="tracks-wrapper" id="tracks-wrapper">
+                        <table id="tracks-table" class="tracks-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-id">ID</th>
+                                    <th class="col-type">Type</th>
+                                    <th class="col-lang-ietf">Language (IETF)</th>
+                                    <th class="col-lang">Language</th>
+                                    <th class="col-enabled">Enabled</th>
+                                    <th class="col-flag">Default</th>
+                                    <th class="col-flag">Forced</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tracks-body">
+                                <tr class="placeholder"><td colspan="7">No file selected</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="result-display" class="result-display hidden">
+                        <pre id="result-content"></pre>
+                    </div>
+                    <div id="loading" class="loading hidden"><p>Processing...</p></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Blazor framework script (minimal, just for bridge) -->
+    <script src="_framework/blazor.webview.js"></script>
+    
+    <!-- Pure JavaScript frontend application -->
+    <script src="app.js"></script>
+</body>
+</html>
