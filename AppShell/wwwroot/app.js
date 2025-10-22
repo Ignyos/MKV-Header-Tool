@@ -483,6 +483,8 @@ function initializeUI() {
 
     function clearTracks() {
         if (!tracksBody) return;
+        currentTracks = [];
+        currentFilePath = null;
         tracksBody.innerHTML = '';
         const tr = document.createElement('tr');
         tr.className = 'placeholder';
@@ -582,18 +584,129 @@ function initializeUI() {
     }
     renderLastDir();
 
-    function renderTracks(info) {
-        // Hide raw JSON display if visible
-        const resultDisplay = document.getElementById('result-display');
-        if (resultDisplay && !resultDisplay.classList.contains('hidden')) {
-            resultDisplay.classList.add('hidden');
+    // Track state management
+    let currentTracks = [];
+    let currentFilePath = null;
+
+    /**
+     * Refresh the current file data from the backend
+     */
+    async function refreshCurrentFileData() {
+        if (!currentFilePath) return;
+        
+        try {
+            const info = await window.bridgeService.readMkvFile(currentFilePath);
+            renderTracks(info);
+        } catch (error) {
+            console.error('Failed to refresh file data:', error);
+        }
+    }
+
+    /**
+     * Apply changes to MKV file immediately
+     * @param {number} sequentialTrackNumber - Sequential track number (1-based) for mkvpropedit
+     * @param {string} property - Property name ('flag-enabled', 'flag-default', 'flag-forced')
+     * @param {boolean} value - New value
+     */
+    async function applyTrackChange(sequentialTrackNumber, property, value) {
+        if (!currentFilePath) {
+            console.error('No file selected for applying changes');
+            return;
         }
 
+        try {
+            const changes = [{
+                PropertyName: property,
+                Section: `track:${sequentialTrackNumber}`,
+                ChangeType: 0, // 0 = Set
+                NewValue: value ? '1' : '0'
+            }];
+
+            console.log('Applying change:', { sequentialTrackNumber, property, value, filePath: currentFilePath });
+            await window.bridgeService.applyMkvChanges(currentFilePath, changes);
+            console.log('✅ Change applied successfully');
+        } catch (error) {
+            console.error('❌ Failed to apply change:', error);
+            // Optionally revert UI state or show error message
+            throw error;
+        }
+    }
+
+    /**
+     * Handle checkbox change with mutual exclusion logic
+     * @param {Event} event - Checkbox change event
+     * @param {number} sequentialTrackNumber - Sequential track number (1-based)
+     * @param {string} trackType - Track type ('video', 'audio', 'subtitle')
+     * @param {string} property - Property type ('enabled', 'default', 'forced')
+     */
+    async function handleCheckboxChange(event, sequentialTrackNumber, trackType, property) {
+        const checkbox = event.target;
+        const newValue = checkbox.checked;
+
+        // Video tracks cannot be modified
+        if (trackType.toLowerCase() === 'video') {
+            checkbox.checked = !newValue; // Revert change
+            return;
+        }
+
+        try {
+            // For audio/subtitle tracks, implement mutual exclusion
+            if (newValue) {
+                // If checking this box, uncheck all others of the same type and property
+                const propertyName = `flag-${property}`;
+                
+                // Find all tracks of the same type that have this property enabled
+                const tracksToDisable = currentTracks
+                    .filter(track => track.trackType === trackType && track.sequentialTrackNumber !== sequentialTrackNumber)
+                    .filter(track => track[property] === true);
+
+                // Disable other tracks first
+                for (const track of tracksToDisable) {
+                    await applyTrackChange(track.sequentialTrackNumber, propertyName, false);
+                    track[property] = false;
+                }
+
+                // Enable this track
+                await applyTrackChange(sequentialTrackNumber, propertyName, true);
+                
+                // Update local state
+                const currentTrack = currentTracks.find(t => t.sequentialTrackNumber === sequentialTrackNumber);
+                if (currentTrack) {
+                    currentTrack[property] = true;
+                }
+            } else {
+                // Unchecking - just disable this track
+                const propertyName = `flag-${property}`;
+                await applyTrackChange(sequentialTrackNumber, propertyName, false);
+                
+                // Update local state
+                const currentTrack = currentTracks.find(t => t.sequentialTrackNumber === sequentialTrackNumber);
+                if (currentTrack) {
+                    currentTrack[property] = false;
+                }
+            }
+
+            // Re-render to update checkbox states
+            renderTracksFromState();
+            
+            // Also refresh the data from the file to ensure UI is in sync
+            await refreshCurrentFileData();
+
+        } catch (error) {
+            // Revert checkbox state on error
+            checkbox.checked = !newValue;
+            console.error('Failed to apply checkbox change:', error);
+        }
+    }
+
+    /**
+     * Render tracks table from current state
+     */
+    function renderTracksFromState() {
         if (!tracksBody) return;
         tracksBody.innerHTML = '';
 
-        const tracks = (info && (info.Tracks || info.tracks)) || [];
-        if (!Array.isArray(tracks) || tracks.length === 0) {
+        if (!Array.isArray(currentTracks) || currentTracks.length === 0) {
             const tr = document.createElement('tr');
             tr.className = 'placeholder';
             const td = document.createElement('td');
@@ -604,34 +717,76 @@ function initializeUI() {
             return;
         }
 
-        for (const t of tracks) {
+        for (const track of currentTracks) {
             const tr = document.createElement('tr');
 
-            // Backend MkvFileInfo.Tracks (PascalCase) shape
-            const id = t.TrackNumber ?? t.id ?? t.Id ?? '';
-            const type = t.TrackType ?? t.type ?? t.Type ?? '';
-            const langIetf = t.LanguageIetf ?? ((t.properties && t.properties.language_ietf) || '');
-            const langLegacy = t.LanguageLegacy ?? ((t.properties && t.properties.language) || '');
-            const enabled = t.IsEnabled ?? t.enabled ?? t.Enabled;
-            const def = t.IsDefault ?? t.default ?? t.Default;
-            const forced = t.IsForced ?? t.forced ?? t.Forced;
-
-            const cells = [
-                id,
-                type,
-                langIetf,
-                langLegacy,
-                (enabled === true ? 'Yes' : enabled === false ? 'No' : ''),
-                (def === true ? 'Yes' : def === false ? 'No' : ''),
-                (forced === true ? 'Yes' : forced === false ? 'No' : '')
-            ];
-            for (const val of cells) {
+            // Create text cells for ID, Type, and Language columns
+            const textCells = [track.trackNumber, track.trackType, track.langIetf, track.langLegacy];
+            for (const val of textCells) {
                 const td = document.createElement('td');
                 td.textContent = val == null ? '' : String(val);
                 tr.appendChild(td);
             }
+            
+            // Create checkbox cells for boolean columns (Enabled, Default, Forced)
+            const properties = ['enabled', 'default', 'forced'];
+            properties.forEach(property => {
+                const td = document.createElement('td');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = track[property] === true;
+                
+                // Disable checkboxes for video tracks
+                if (track.trackType.toLowerCase() === 'video') {
+                    checkbox.disabled = true;
+                    checkbox.title = 'Video track properties cannot be modified';
+                } else {
+                    checkbox.disabled = false;
+                    checkbox.addEventListener('change', (e) => 
+                        handleCheckboxChange(e, track.sequentialTrackNumber, track.trackType, property)
+                    );
+                }
+                
+                td.appendChild(checkbox);
+                tr.appendChild(td);
+            });
+            
             tracksBody.appendChild(tr);
         }
+    }
+
+    function renderTracks(info) {
+        // Hide raw JSON display if visible
+        const resultDisplay = document.getElementById('result-display');
+        if (resultDisplay && !resultDisplay.classList.contains('hidden')) {
+            resultDisplay.classList.add('hidden');
+        }
+
+        if (!tracksBody) return;
+        
+        // Store current file path for applying changes
+        currentFilePath = getSelectedPath();
+
+        const tracks = (info && (info.Tracks || info.tracks)) || [];
+        if (!Array.isArray(tracks) || tracks.length === 0) {
+            currentTracks = [];
+            renderTracksFromState();
+            return;
+        }
+
+        // Convert tracks to internal state format
+        currentTracks = tracks.map((t, index) => ({
+            trackNumber: t.TrackNumber ?? t.id ?? t.Id ?? '',
+            sequentialTrackNumber: index + 1, // Sequential numbering starting from 1
+            trackType: t.TrackType ?? t.type ?? t.Type ?? '',
+            langIetf: t.LanguageIetf ?? ((t.properties && t.properties.language_ietf) || ''),
+            langLegacy: t.LanguageLegacy ?? ((t.properties && t.properties.language) || ''),
+            enabled: t.IsEnabled ?? t.enabled ?? t.Enabled,
+            default: t.IsDefault ?? t.default ?? t.Default,
+            forced: t.IsForced ?? t.forced ?? t.Forced
+        }));
+
+        renderTracksFromState();
     }
 }
 

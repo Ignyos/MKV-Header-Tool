@@ -160,7 +160,7 @@ public class MkvService : IMkvService
             }
 
             var commandLine = string.Join(" ", args);
-            _logger.LogDebug("Executing mkvpropedit with args: {Args}", commandLine);
+            _logger.LogInformation("Executing mkvpropedit with args: {Args}", commandLine);
 
             var result = await RunMkvPropEditAsync(commandLine);
             

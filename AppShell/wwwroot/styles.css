@@ -119,8 +119,26 @@ body {
 .tracks-table .col-flag { width: 80px; text-align: center; }
 .tracks-table .col-name { width: auto; }
 
-/* Align flags nicely */
-.tracks-table tbody td:nth-last-child(-n+2) { text-align: center; }
+/* Align Enabled, Default, and Forced columns nicely */
+.tracks-table tbody td:nth-child(5),
+.tracks-table tbody td:nth-child(6), 
+.tracks-table tbody td:nth-child(7) { 
+    text-align: center; 
+}
+
+/* Checkbox styling for boolean columns */
+.tracks-table tbody td input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
+.tracks-table tbody td input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
 /* Left panel scrollbar styling */
 .panel-left .list::-webkit-scrollbar {        /* Chromium/WebKit */
     width: 10px;
