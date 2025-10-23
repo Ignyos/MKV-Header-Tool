@@ -30,6 +30,8 @@
     <Company>Ignyos</Company>
     <!-- Use plain ASCII to avoid encoding issues in tooling -->
     <Copyright>Copyright (c) Ignyos 2025</Copyright>
+    <!-- Windows Application Icon - Custom MKV icon for Windows only -->
+    <ApplicationIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">Resources\AppIcon\systray32.ico</ApplicationIcon>
     <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
     <WindowsPackageType>None</WindowsPackageType>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
@@ -40,11 +42,10 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
-    <!-- App Icon -->
-  <!-- Temporarily disable SVG assets to debug Resizetizer XML declaration error -->
-  <!-- <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" /> -->
-  <!-- Splash Screen -->
-  <!-- <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" /> -->
+    <!-- App Icon - Using standard appicon for cross-platform compatibility -->
+    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+    <!-- Splash Screen - Using the original splash -->
+    <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
     <!-- Images -->
     <MauiImage Include="Resources\Images\*" />
     <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
@@ -60,6 +61,19 @@
     <None Include="Resources\mkvmerge.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    
+    <!-- Custom Icons -->
+    <None Include="Resources\AppIcon\*.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\AppIcon\*.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    
+    <!-- Embedded Icon Resource for System Tray -->
+    <EmbeddedResource Include="Resources\AppIcon\systray32.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <!-- Blazor will automatically include wwwroot files as static web assets, so we don't need MauiAsset for them -->

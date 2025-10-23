@@ -8,6 +8,7 @@ using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using WinRT.Interop;
 using System.Runtime.InteropServices;
+using AppShell.Platforms.Windows;
 #endif
 
 namespace AppShell
@@ -27,19 +28,15 @@ namespace AppShell
                 });
 
 #if WINDOWS
-            // Set the application title using lifecycle events
+            // Configure Windows platform using helper
             builder.ConfigureLifecycleEvents(events =>
             {
                 events.AddWindows(windowsLifecycleBuilder =>
                 {
                     windowsLifecycleBuilder.OnWindowCreated(window =>
                     {
-                        // Just set the window title - use standard Windows title bar
-                        var handle = WinRT.Interop.WindowNative.GetWindowHandle(window);
-                        var id = Win32Interop.GetWindowIdFromWindow(handle);
-                        var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(id);
-                        
-                        appWindow.Title = "MKV Header Tool";
+                        // Use our custom Windows helper for full configuration
+                        WindowsHelper.ConfigureTitleBar(window);
                     });
                 });
             });

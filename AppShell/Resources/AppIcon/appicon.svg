@@ -1,3 +1,40 @@
-<svg width="456" height="456" viewBox="0 0 456 456" version="1.1" xmlns="http://www.w3.org/2000/svg">
-    <rect x="0" y="0" width="456" height="456" fill="#512BD4" />
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="456" height="456" viewBox="0 0 456 456" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+    </linearGradient>
+    <filter id="textShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="3" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect x="0" y="0" width="456" height="456" fill="url(#bgGradient)" rx="45"/>
+  
+  <!-- MKV Text with shadow -->
+  <text x="228" y="200" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="120" font-weight="bold" fill="white" filter="url(#textShadow)">MKV</text>
+  
+  <!-- Track visualization -->
+  <g transform="translate(80, 250)">
+    <!-- Video track (yellow/orange - largest) -->
+    <rect x="0" y="0" width="296" height="35" rx="17.5" fill="#f59e0b"/>
+    <!-- Audio track 1 (green) -->
+    <rect x="0" y="45" width="250" height="28" rx="14" fill="#10b981"/>
+    <!-- Audio track 2 (green, shorter) -->
+    <rect x="0" y="85" width="220" height="28" rx="14" fill="#059669"/>
+    <!-- Subtitle track (purple, smallest) -->
+    <rect x="0" y="125" width="190" height="20" rx="10" fill="#8b5cf6"/>
+  </g>
+  
+  <!-- Edit indicator (gear icon) -->
+  <g transform="translate(350, 70)" opacity="0.9">
+    <circle cx="25" cy="25" r="25" fill="#ffffff" opacity="0.9"/>
+    <circle cx="25" cy="25" r="18" fill="none" stroke="#1e40af" stroke-width="4"/>
+    <circle cx="25" cy="25" r="8" fill="#1e40af"/>
+    <!-- Gear teeth -->
+    <path d="M25,2 L25,12 M25,38 L25,48 M2,25 L12,25 M38,25 L48,25 M10.8,10.8 L17.2,17.2 M32.8,32.8 L39.2,39.2 M39.2,10.8 L32.8,17.2 M17.2,32.8 L10.8,39.2" stroke="#1e40af" stroke-width="3"/>
+  </g>
 </svg>

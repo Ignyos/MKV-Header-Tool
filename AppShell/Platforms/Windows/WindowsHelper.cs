@@ -6,10 +6,11 @@ namespace AppShell.Platforms.Windows
     {
         public static void ConfigureTitleBar(Microsoft.UI.Xaml.Window window)
         {
-            // Hide the default title bar and extend content into title bar area
-            window.ExtendsContentIntoTitleBar = true;
-            window.SetTitleBar(null);
+            // Keep the default title bar but customize it
             window.Title = "MKV Header Tool";
+            
+            // Initialize system tray functionality and set window icon
+            SystemTrayHelper.Initialize(window);
         }
     }
 }
