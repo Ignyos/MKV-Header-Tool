@@ -6,8 +6,7 @@
     --panel-border: #383838;
     --text: #dfdfdf;
     --muted: #6b7280;
-    --accent: #1f4caf; /* Windows-like accent */
-    --accent-hover: #2255c4;
+    --accent: #2267fc;
     --radius: 6px;
 }
 
@@ -262,7 +261,7 @@ body {
     border-radius: 4px;
 }
 
-.panel-header button:not(.primary):hover { 
+.panel-header button:not(.primary):hover {
     background: #d1d5db; 
 }
 

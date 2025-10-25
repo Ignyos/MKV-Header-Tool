@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <!-- Disable MAUI Resizetizer globally -->
+    <UseMauiResizetizer>false</UseMauiResizetizer>
+    <EnableMauiResizetizer>false</EnableMauiResizetizer>
+    <MauiResizetizerEnabled>false</MauiResizetizerEnabled>
+    <!-- Skip all SVG processing -->
+    <SkipMauiResourceGeneration>true</SkipMauiResourceGeneration>
+  </PropertyGroup>
+</Project>
