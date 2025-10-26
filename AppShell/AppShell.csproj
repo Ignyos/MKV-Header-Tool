@@ -1,9 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
-    <TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
+    <!-- Target only Windows for this Windows-specific app -->
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <!-- Disable MAUI Resizetizer to avoid XML parsing issues -->
+    <EnableMauiImageResize>false</EnableMauiImageResize>
+    <EnableMauiIconResize>false</EnableMauiIconResize>
+    <EnableMauiSplashResize>false</EnableMauiSplashResize>
     <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-    <!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
+    <!-- <TargetFrameworks>$(TargetFrameworks);net8.0-tizen</TargetFrameworks> -->
     <!-- Note for MacCatalyst:
 		The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
 		When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifier>.
@@ -30,31 +34,24 @@
     <Company>Ignyos</Company>
     <!-- Use plain ASCII to avoid encoding issues in tooling -->
     <Copyright>Copyright (c) Ignyos 2025</Copyright>
-    <!-- Windows Application Icon - Custom MKV icon for Windows only -->
+    <!-- Windows Application Icon - Re-enable for final build -->
     <ApplicationIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">Resources\AppIcon\systray32.ico</ApplicationIcon>
-    <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
+    <!-- Bypass Package.appxmanifest generation completely -->
     <WindowsPackageType>None</WindowsPackageType>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23.0</SupportedOSPlatformVersion>
+    <UseWinUI>true</UseWinUI>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
     <!-- Remove all MAUI icon/splash processing to avoid XML issues -->
-    <!-- Keep appicon.svg as base resource but don't process it -->
-    
     <!-- Images - Remove automatic processing -->
     <!-- <MauiImage Include="Resources\Images\*" /> -->
     <!-- <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" /> -->
-    
     <!-- Custom Fonts -->
     <MauiFont Include="Resources\Fonts\*" />
-    
     <!-- Raw Assets - Remove to avoid conflicts -->
     <!-- <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" /> -->
-    
     <!-- MKV Tools - Copy to output directory -->
     <None Include="Resources\mkvpropedit.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -62,21 +59,15 @@
     <None Include="Resources\mkvmerge.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    
     <!-- Only include the ICO file we actually use -->
-    <EmbeddedResource Include="Resources\AppIcon\systray32.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    
-    <!-- Keep appicon.svg as a None item (not processed, just available) -->
-    <None Include="Resources\AppIcon\appicon.svg" />
+    <!-- Removed EmbeddedResource as ApplicationIcon already handles this -->
   </ItemGroup>
   <ItemGroup>
     <!-- Blazor will automatically include wwwroot files as static web assets, so we don't need MauiAsset for them -->
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.7" />
   </ItemGroup>
 </Project>

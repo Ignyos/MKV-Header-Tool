@@ -1,4 +1,4 @@
-<?xml Version="1.0.0.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
@@ -6,19 +6,19 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap rescap">
 
-  <Identity Name="@@PACKAGE_ID@@" Publisher="CN=@@COMPANY_NAME@@" Version="1.0.0.0" />
+  <Identity Name="maui-package-name-placeholder" Publisher="CN=User Name" Version="0.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="336BDE35-B42B-44BF-BAA6-E4963D5E5E17" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="2C741FD0-9D51-451F-8A86-CC1E565834C0" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>@@DISPLAY_TITLE@@</DisplayName>
-    <PublisherDisplayName>@@COMPANY_NAME@@</PublisherDisplayName>
+    <DisplayName>$placeholder$</DisplayName>
+    <PublisherDisplayName>User Name</PublisherDisplayName>
     <Logo>$placeholder$.png</Logo>
   </Properties>
 
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="1.0.0.0" MaxVersionTested="10.0.19041.0" />
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="1.0.0.0" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
   </Dependencies>
 
   <Resources>

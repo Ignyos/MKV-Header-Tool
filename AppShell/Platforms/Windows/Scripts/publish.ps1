@@ -89,7 +89,7 @@ function Build-MauiApp {
     
     # Project file is three levels up from this script (Platforms/Windows/Scripts)
     $projectPath = "..\..\..\AppShell.csproj"
-    $targetFramework = "net9.0-windows10.0.19041.0"
+    $targetFramework = "net8.0-windows10.0.19041.0"
     # Output path referenced implicitly via publish step; explicit variable removed to satisfy analyzer
     
     # Clean previous build
@@ -339,8 +339,8 @@ try {
         }
     } else {
     # Determine existing publish path (prefer self-contained if both exist)
-    $scPath = "..\..\..\bin\$Configuration\net9.0-windows10.0.19041.0\win10-x64\publish"
-    $fdPath = "..\..\..\bin\$Configuration\net9.0-windows10.0.19041.0\publish"
+    $scPath = "..\..\..\bin\$Configuration\net8.0-windows10.0.19041.0\win10-x64\publish"
+    $fdPath = "..\..\..\bin\$Configuration\net8.0-windows10.0.19041.0\publish"
     if (Test-Path $scPath) { $publishPath = $scPath } elseif (Test-Path $fdPath) { $publishPath = $fdPath } else { $publishPath = $scPath }
         if (-not (Test-Path $publishPath)) {
             Write-Host "[ERROR] Published files not found. Run without -SkipBuild first." -ForegroundColor Red
