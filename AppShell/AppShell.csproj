@@ -51,9 +51,7 @@
   
   <ItemGroup Condition="'$(Configuration)' != 'Release'">
     <!-- App Icon - Using standard appicon for cross-platform compatibility -->
-    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
-    <!-- Splash Screen - Using the original splash -->
-    <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+    <MauiIcon Include="Resources\AppIcon\systray32.ico" ForegroundFile="Resources\AppIcon\systray32.ico" Color="#512BD4" />
   </ItemGroup>
   
   <ItemGroup>
